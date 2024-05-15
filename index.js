@@ -52,7 +52,8 @@ async function run() {
     // get all jobs
     app.get("/all-jobs", async (req, res) => {
       const jobs = await jobCollections.find().toArray();
-      res.send(jobs);
+      const sortedJobPosts = [...jobs].sort((a, b) => b.createAt - a.createAt);
+      res.send(sortedJobPosts);
     });
 
     // get single job using id
