@@ -100,7 +100,7 @@ async function run() {
     });
 
     // User Registration
-    app.post("/register", async (req, res) => {
+    app.post("/sign-up", async (req, res) => {
       const body = req.body;
       body.createdAt = new Date();
 
