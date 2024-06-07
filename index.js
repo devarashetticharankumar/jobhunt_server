@@ -31,6 +31,7 @@ async function run() {
     // create db
     const db = client.db("job-portal-db");
     const jobCollections = db.collection("demoJobs");
+    const userCollections = db.collection("User");
 
     // post a job
 
@@ -94,6 +95,67 @@ async function run() {
       };
       const result = await jobCollections.updateOne(filter, updateDoc, options);
       res.send(result);
+    });
+
+    // User Registration
+    app.post("/register", async (req, res) => {
+      const body = req.body;
+      body.createdAt = new Date();
+
+      // Check if email already exists
+      const existingUser = await userCollections.findOne({ email: body.email });
+      if (existingUser) {
+        return res.status(400).send({
+          message: "Email already exists",
+          status: "false",
+        });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      body.password = await bcrypt.hash(body.password, salt);
+      const result = await userCollections.insertOne(body);
+      if (result.insertedId) {
+        // Generate JWT token
+        const token = jwt.sign(
+          { userId: result.insertedId },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1h",
+          }
+        );
+        return res.status(200).send({ user: body, token });
+      } else {
+        return res.status(500).send({
+          message: "Cannot register user, try again later",
+          status: "false",
+        });
+      }
+    });
+
+    // User Login
+    app.post("/login", async (req, res) => {
+      const body = req.body;
+      const user = await userCollections.findOne({ email: body.email });
+      if (user) {
+        const isValid = await bcrypt.compare(body.password, user.password);
+        if (isValid) {
+          // Generate JWT token
+          const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "1h",
+          });
+          return res.status(200).send({ user, token });
+        } else {
+          return res.status(401).send({
+            message: "Invalid email or password",
+            status: "false",
+          });
+        }
+      } else {
+        return res.status(401).send({
+          message: "Invalid email or password",
+          status: "false",
+        });
+      }
     });
 
     // Send a ping to confirm a successful connection
