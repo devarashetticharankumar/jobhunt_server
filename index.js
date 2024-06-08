@@ -1,11 +1,11 @@
 const express = require("express");
-const dotenv = require("dotenv");
+require("dotenv").config();
 const cors = require("cors");
 // require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 
 // middleware========
 
