@@ -1,7 +1,7 @@
 const express = require("express");
-require("dotenv").config();
+const dotenv = require("dotenv");
 const cors = require("cors");
-require("dotenv").config();
+// require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -99,7 +99,7 @@ async function run() {
     });
 
     // User Registration
-    app.post("/sign-up", async (req, res) => {
+    app.post("/register", async (req, res) => {
       const body = req.body;
       body.createdAt = new Date();
 
