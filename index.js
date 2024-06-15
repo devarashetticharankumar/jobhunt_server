@@ -158,28 +158,6 @@ async function run() {
       }
     });
 
-    // Get user profile
-    app.get("/profile", async (req, res) => {
-      try {
-        const userId = req.user.userId; // Assuming you have middleware to extract userId from JWT token
-        const user = await userCollections.findOne({ _id: ObjectId(userId) });
-        if (user) {
-          return res.status(200).send({ user });
-        } else {
-          return res.status(404).send({
-            message: "User not found",
-            status: "false",
-          });
-        }
-      } catch (error) {
-        console.error(error);
-        return res.status(500).send({
-          message: "Error fetching user profile",
-          status: "false",
-        });
-      }
-    });
-
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
