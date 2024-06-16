@@ -120,7 +120,7 @@ async function run() {
           { userId: result.insertedId },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1h",
+            expiresIn: "1d",
           }
         );
         return res.status(200).send({ user: body, token });
@@ -141,7 +141,7 @@ async function run() {
         if (isValid) {
           // Generate JWT token
           const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: "1h",
+            expiresIn: "1d",
           });
           return res.status(200).send({ user, token });
         } else {
