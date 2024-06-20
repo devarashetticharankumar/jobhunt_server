@@ -1,13 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 const app = express();
 
 const port = process.env.PORT || 8080;
 // middleware========
-
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
@@ -32,6 +34,7 @@ async function run() {
     const db = client.db("job-portal-db");
     const jobCollections = db.collection("demoJobs");
     const userCollections = db.collection("User");
+    // const subscribersCollection = db.collection("subscribers");
 
     // post a job
 
@@ -157,6 +160,56 @@ async function run() {
         });
       }
     });
+
+    // // Create a transporter for sending emails
+    // const transporter = nodemailer.createTransport({
+    //   host: process.env.HOST,
+    //   port: Number(process.env.EMAIL_PORT),
+    //   service: process.env.SERVICE,
+    //   secure: Boolean(process.env.SECURE),
+    //   auth: {
+    //     user: process.env.GMAIL,
+    //     pass: process.env.GMAIL_PASSWORD, // Use an environment variable or secure password storage
+    //   },
+    // });
+
+    // // Route for subscribing to job alerts
+    // app.post("/subscribe", async (req, res) => {
+    //   try {
+    //     const { email } = req.body;
+
+    //     // Check if email already exists
+    //     const existingSubscriber = await subscribersCollection.findOne({
+    //       email,
+    //     });
+    //     if (existingSubscriber) {
+    //       return res.status(400).json({ message: "Email already exists" });
+    //     }
+
+    //     // Create new subscriber
+    //     await subscribersCollection.insertOne({ email });
+
+    //     // Send success email
+    //     const mailOptions = {
+    //       from: process.env.GMAIL,
+    //       to: email,
+    //       subject: "Subscription Successful!",
+    //       text: `Thank you for subscribing to our job alerts! You will receive notifications about new job opportunities.`,
+    //     };
+    //     transporter.sendMail(mailOptions, (err, info) => {
+    //       if (err) {
+    //         console.error(err);
+    //       } else {
+    //         console.log(`Email sent to ${email}`);
+    //       }
+    //     });
+
+    //     res.status(201).json({ message: "Subscribed successfully" });
+    //   } catch (err) {
+    //     console.error(err);
+    //     res.status(500).json({ message: "Internal server error" });
+    //   }
+    // });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
